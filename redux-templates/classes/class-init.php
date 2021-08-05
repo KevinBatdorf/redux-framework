@@ -92,26 +92,26 @@ class Init
      */
     public function editor_assets()
     {
-        // $fs  = \Redux_Filesystem::get_instance();
-        // $min = \Redux_Functions::is_min();
+        $fs  = \Redux_Filesystem::get_instance();
+        $min = \Redux_Functions::is_min();
 
         // // Little safety here for developers.
-        // if (! $fs->file_exists(REDUXTEMPLATES_DIR_PATH . "assets/js/redux-templates{$min}.js")) {
-        //     if ('.min' === $min) {
-        //         $min = '';
-        //     } else {
-        //         $min = '.min';
-        //     }
-        // }
-        // $version = REDUXTEMPLATES_VERSION;
+        if (! $fs->file_exists(REDUXTEMPLATES_DIR_PATH . "assets/js/redux-templates{$min}.js")) {
+            if ('.min' === $min) {
+                $min = '';
+            } else {
+                $min = '.min';
+            }
+        }
+        $version = REDUXTEMPLATES_VERSION;
         // // When doing local dev work. Otherwise follow the check for dev_mode or not.
-        // if (defined('REDUX_PLUGIN_FILE')) {
-        //     if ($fs->file_exists(trailingslashit(dirname(REDUX_PLUGIN_FILE)) . 'local_developer.txt')) {
-        //         $min = '';
-        //     }
-        //     $version = time();
-        // }
-        // $min = ''; // Fix since our min'd file isn't working.
+        if (defined('REDUX_PLUGIN_FILE')) {
+            if ($fs->file_exists(trailingslashit(dirname(REDUX_PLUGIN_FILE)) . 'local_developer.txt')) {
+                $min = '';
+            }
+            $version = time();
+        }
+        $min = ''; // Fix since our min'd file isn't working.
 
         // wp_enqueue_script(
         //     'redux-templates-js',
@@ -123,7 +123,7 @@ class Init
 
         // wp_set_script_translations('redux-templates-js', 'redux-templates');
 
-        // Backend editor scripts: common vendor files.
+        // // Backend editor scripts: common vendor files.
         // wp_enqueue_script(
         //     'redux-templates-js-vendor',
         //     plugins_url("assets/js/vendor{$min}.js", REDUXTEMPLATES_FILE),
@@ -133,52 +133,52 @@ class Init
         // );
 
         // We started using the CSS variables. This gives us the function before it's put in core.
-        // if (version_compare(get_bloginfo('version'), '5.5', '<')) {
-        //     if (! defined('GUTENBERG_VERSION') || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '8.5.1', '<'))) {
-        //         wp_register_style('redux-templates-gutenberg-compatibility', false, array(), $version);
-        //         wp_enqueue_style('redux-templates-gutenberg-compatibility');
-        //         wp_add_inline_style('redux-templates-gutenberg-compatibility', ':root {--wp-admin-theme-color: #007cba;}');
-        //     }
-        // }
+        if (version_compare(get_bloginfo('version'), '5.5', '<')) {
+            if (! defined('GUTENBERG_VERSION') || (defined('GUTENBERG_VERSION') && version_compare(GUTENBERG_VERSION, '8.5.1', '<'))) {
+                wp_register_style('redux-templates-gutenberg-compatibility', false, array(), $version);
+                wp_enqueue_style('redux-templates-gutenberg-compatibility');
+                wp_add_inline_style('redux-templates-gutenberg-compatibility', ':root {--wp-admin-theme-color: #007cba;}');
+            }
+        }
 
-        // $global_vars = array(
-        //     'i18n'              => 'redux-framework',
-        //     'plugin'            => REDUXTEMPLATES_DIR_URL,
-        //     'mokama'            => \Redux_Helpers::mokama(),
-        //     'key'               => \base64_encode(\Redux_Functions::gs()), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-        //     'version'           => \Redux_Core::$version,
-        //     'supported_plugins' => array(), // Load the supported plugins.
-        //     'tos'               => \Redux_Connection_Banner::tos_blurb('import_wizard'),
-        // );
-        // if (! $global_vars['mokama']) {
-        //     // phpcs:disable Squiz.PHP.CommentedOutCode
-        //     // delete_user_meta( get_current_user_id(), '_redux_templates_counts'); // To test left.
-        //     $global_vars['left'] = ReduxTemplates\Init::left(get_current_user_id());
+        $global_vars = array(
+            'i18n'              => 'redux-framework',
+            'plugin'            => REDUXTEMPLATES_DIR_URL,
+            'mokama'            => \Redux_Helpers::mokama(),
+            'key'               => \base64_encode(\Redux_Functions::gs()), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+            'version'           => \Redux_Core::$version,
+            'supported_plugins' => array(), // Load the supported plugins.
+            'tos'               => \Redux_Connection_Banner::tos_blurb('import_wizard'),
+        );
+        if (! $global_vars['mokama']) {
+            // phpcs:disable Squiz.PHP.CommentedOutCode
+            // delete_user_meta( get_current_user_id(), '_redux_templates_counts'); // To test left.
+            $global_vars['left'] = ReduxTemplates\Init::left(get_current_user_id());
 
-        //     // phpcs:ignore
-        //     // delete_user_meta( get_current_user_id(), '_redux_welcome_guide' ); // For testing.
-        //     if (\Redux_Helpers::is_gutenberg_page() && $global_vars['left'] === self::$default_left) {
-        //         // We don't want to show unless Gutenberg is running and they haven't tried the library yet.
-        //         $launched = get_user_meta(get_current_user_id(), '_redux_welcome_guide', true);
-        //         if ('1' !== $launched) {
-        //             $global_vars['welcome'] = 1;
-        //         }
-        //     }
-        // }
+            // phpcs:ignore
+            // delete_user_meta( get_current_user_id(), '_redux_welcome_guide' ); // For testing.
+            if (\Redux_Helpers::is_gutenberg_page() && $global_vars['left'] === self::$default_left) {
+                // We don't want to show unless Gutenberg is running and they haven't tried the library yet.
+                $launched = get_user_meta(get_current_user_id(), '_redux_welcome_guide', true);
+                if ('1' !== $launched) {
+                    $global_vars['welcome'] = 1;
+                }
+            }
+        }
 
-        // if (! $global_vars['mokama']) {
-        //     $global_vars['u'] = rtrim(\Redux_Functions_Ex::get_site_utm_url('', 'library', true), '1');
-        // }
+        if (! $global_vars['mokama']) {
+            $global_vars['u'] = rtrim(\Redux_Functions_Ex::get_site_utm_url('', 'library', true), '1');
+        }
 
         // TODO - Only have this show up After 2 imports and Redux installed for a week. If they dismissed, then show up again in 30 days one last time.
         // phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar
-        // $global_vars['nps'] = __( 'Hey there. You\'ve been using Redux for a bit now, would you mind letting us know how likely you are to recommend Redux to a friend or colleague?', 'redux-framework' );
+        $global_vars['nps'] = __('Hey there. You\'ve been using Redux for a bit now, would you mind letting us know how likely you are to recommend Redux to a friend or colleague?', 'redux-framework');
 
-        // wp_localize_script(
-        //     'redux-templates-js',
-        //     'redux_templates',
-        //     $global_vars
-        // );
+        wp_localize_script(
+            'redux-templates-js',
+            'redux_templates',
+            $global_vars
+        );
 
         wp_enqueue_style(
             'redux-fontawesome',
